@@ -74,7 +74,3 @@ class SaleOrder(models.Model):
             'url': whatsapp_url,
             'target': 'new',
         }
-            'type': 'ir.actions.act_url',
-            'url': whatsapp_url,
-            'target': 'new',
-        }
