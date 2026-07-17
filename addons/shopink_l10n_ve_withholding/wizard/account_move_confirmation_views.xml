@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_move_confirmation_wizard_form" model="ir.ui.view">
+            <field name="name">account.move.confirmation.wizard.form</field>
+            <field name="model">account.move.confirmation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="⚠️ Validación Crítica ante Emisión FACTURA">
+                    
+                    <div class="alert alert-danger text-center font-weight-bold" role="alert">
+                        ¡ALERTA DE SEGURIDAD FISCAL PROVIDENCIA ADMINISTRATIVA N.º SNAT/2024/000121 SENIAT!
+                    </div>
+                    
+                    <div class="alert alert-warning" role="alert">
+                        <p class="mb-1"><strong>Está a punto de emitir y registrar esta factura:</strong></p>
+                        <ul>
+                            <li>Se consumirá de forma irreversible un correlativo digital.</li>
+                            <li>Se alimentará automáticamente el Libro de Ventas.</li>
+                            <li><strong>No se podrá modificar ni cancelar</strong> bajo ningún concepto.</li>
+                        </ul>
+                    </div>
+
+                    <group string="Datos del Documento a Validar">
+                        <field name="partner_id" readonly="1" options="{'no_open': True}"/>
+                        <field name="amount_total" readonly="1"/>
+                    </group>
+
+                    <div class="alert alert-info text-center" role="alert">
+                        ¿Ya comprobó el estatus o emitió previamente este documento ante el portal de <strong>CG Imprenta Digital </strong>? Cualquier error posterior requerirá una Nota de Crédito.
+                    </div>
+
+                    <footer>
+                        <button string="Sí, datos correctos. Emitir Factura" name="action_force_post" type="object" class="btn-danger"/>
+                        <button string="No, revisar datos" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
