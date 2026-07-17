@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_order_form_inherit_commercial_payment" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.commercial.payment</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_register_commercial_payment" string="Registrar Pago Comercial" type="object" class="oe_highlight" invisible="state not in ('sale', 'done') or commercial_payment_state == 'paid'"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="commercial_payment_state" widget="badge" decoration-success="commercial_payment_state == 'paid'" decoration-info="commercial_payment_state == 'partial'" decoration-warning="commercial_payment_state == 'unpaid'"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_order_tree_inherit_commercial_payment" model="ir.ui.view">
+            <field name="name">sale.order.tree.inherit.commercial.payment</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_status']" position="after">
+                    <field name="commercial_payment_state" widget="badge" decoration-success="commercial_payment_state == 'paid'" decoration-info="commercial_payment_state == 'partial'" decoration-warning="commercial_payment_state == 'unpaid'"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
