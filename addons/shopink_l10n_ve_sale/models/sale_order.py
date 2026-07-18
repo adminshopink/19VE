@@ -67,7 +67,7 @@ class SaleOrder(models.Model):
         
         # Codificación y retorno de la acción
         encoded_message = urllib.parse.quote(mensaje_completo)
-        whatsapp_url = f"https://api.whatsapp.com/send?phone={clean_phone}&text={encoded_message}"
+        whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_message}"
         
         return {
             'type': 'ir.actions.act_url',
