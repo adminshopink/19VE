@@ -12,16 +12,15 @@ class SaleOrder(models.Model):
 
     @api.depends('state', 'amount_total')
     def _compute_commercial_payment_state(self):
-        """ Evalúa el estado buscando pagos publicados usando el campo 'ref' """
+        """ Evalúa el estado buscando pagos publicados usando el campo 'memo' """
         for order in self:
             if order.state not in ('sale', 'done'):
                 order.commercial_payment_state = 'unpaid'
                 continue
             
-            # Buscamos en 'ref' (campo estándar de Odoo para el concepto del pago)
-            # Usamos ilike con % para encontrar la orden incluso si el texto incluye "Pago Comercial -"
+            # Se utiliza 'memo' que es el campo técnico verificado
             payments = self.env['account.payment'].search([
-                ('ref', 'ilike', order.name),
+                ('memo', 'ilike', order.name),
                 ('state', '=', 'posted')
             ])
             
@@ -35,7 +34,7 @@ class SaleOrder(models.Model):
                 order.commercial_payment_state = 'unpaid'
 
     def action_register_commercial_payment(self):
-        """ Abre el asistente nativo usando 'ref' en el contexto """
+        """ Abre el asistente nativo usando 'memo' en el contexto """
         self.ensure_one()
         
         journal = self.env['account.journal'].search([('type', 'in', ('bank', 'cash'))], limit=1)
@@ -53,6 +52,6 @@ class SaleOrder(models.Model):
                 'default_partner_id': self.partner_id.id,
                 'default_amount': self.amount_total,
                 'default_journal_id': journal.id if journal else False,
-                'default_ref': _('Pago Comercial - %s') % self.name, # Cambiado default_memo a default_ref
+                'default_memo': _('Pago Comercial - %s') % self.name, # Corregido a default_memo
             },
         }
