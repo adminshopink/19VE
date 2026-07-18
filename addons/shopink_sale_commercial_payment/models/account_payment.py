@@ -9,12 +9,10 @@ class AccountPayment(models.Model):
         res = super(AccountPayment, self).action_post()
         
         for payment in self:
-            # Buscamos la orden de venta basándonos en la referencia guardada
-            # Usamos un filtro para asegurar que solo buscamos si hay una referencia
-            if payment.ref:
-                # Extraemos el nombre de la orden si el formato es "Pago Comercial - S00001"
-                # o simplemente buscamos la coincidencia si el memo/ref coincide
-                order = self.env['sale.order'].search([('name', 'ilike', payment.ref)], limit=1)
+            # Usamos 'memo' que es el campo real en tu base de datos
+            if payment.memo:
+                # Buscamos la orden de venta que coincida con el contenido del campo memo
+                order = self.env['sale.order'].search([('name', 'ilike', payment.memo)], limit=1)
                 
                 if order:
                     # Forzamos el recálculo del campo computado en la orden
