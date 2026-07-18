@@ -4,18 +4,18 @@ from odoo import models, api
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
-    def action_post(self):
-        # Ejecutamos la lógica estándar de publicación de Odoo
-        res = super(AccountPayment, self).action_post()
+    def write(self, vals):
+        # Capturamos el estado antes de guardar los cambios
+        # Si el valor que viene en 'vals' cambia el estado a 'posted'
+        res = super(AccountPayment, self).write(vals)
         
-        for payment in self:
-            # Usamos 'memo' que es el campo real en tu base de datos
-            if payment.memo:
-                # Buscamos la orden de venta que coincida con el contenido del campo memo
-                order = self.env['sale.order'].search([('name', 'ilike', payment.memo)], limit=1)
-                
-                if order:
-                    # Forzamos el recálculo del campo computado en la orden
-                    order.recompute(['commercial_payment_state'])
-        
+        if 'state' in vals and vals['state'] == 'posted':
+            for payment in self:
+                # Buscamos la orden que coincida con el memo
+                if payment.memo:
+                    order = self.env['sale.order'].search([('name', 'ilike', payment.memo)], limit=1)
+                    if order:
+                        # Forzamos el recálculo del campo computado
+                        order.recompute(['commercial_payment_state'])
+                        
         return res
