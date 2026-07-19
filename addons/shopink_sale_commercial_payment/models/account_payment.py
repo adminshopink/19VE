@@ -9,7 +9,7 @@ class AccountPayment(models.Model):
         # Si el valor que viene en 'vals' cambia el estado a 'posted'
         res = super(AccountPayment, self).write(vals)
         
-        if 'state' in vals and vals['state'] == 'posted':
+        if 'state' in vals and vals['state'] == 'paid':
             for payment in self:
                 # Buscamos la orden que coincida con el memo
                 if payment.memo:
