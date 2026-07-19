@@ -5,9 +5,14 @@
     'summary': 'Gestión de retenciones de IVA recibidas e ISLR mediante diarios contables.',
     'category': 'Accounting/Localizations',
     'author': 'Shopink',
-    'depends': ['account', 'web_studio', 'shopink_l10n_ve_partner'],
+    'depends': [
+        'account', 
+        'web_studio', 
+        'shopink_l10n_ve_partner'
+    ],
     'data': [
-        'security/ir.model.access.csv', # <-- Agregado aquí
+        'security/security.xml', # Obligatorio primero para crear el grupo
+        'security/ir.model.access.csv', # Luego se asignan los permisos al grupo
         'wizard/account_move_confirmation_views.xml',
         'views/l10n_ve_islr_concept_views.xml',
         'views/account_move_views.xml',
