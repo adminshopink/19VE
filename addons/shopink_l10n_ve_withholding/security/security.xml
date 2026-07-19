@@ -2,7 +2,5 @@
 <odoo>
     <record id="group_factura_digital_manager" model="res.groups">
         <field name="name">Confirmador de Facturas Digitales</field>
-        <field name="category_id" ref="base.module_category_accounting"/>
-        <field name="users" eval="[(4, ref('base.user_admin'))]"/> 
     </record>
 </odoo>
