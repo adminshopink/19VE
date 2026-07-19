@@ -10,7 +10,12 @@
                     <button name="action_register_commercial_payment" string="Registrar Pago Comercial" type="object" class="oe_highlight" invisible="state not in ('sale', 'done') or commercial_payment_state == 'paid'"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <!-- Estado principal -->
                     <field name="commercial_payment_state" widget="badge" decoration-success="commercial_payment_state == 'paid'" decoration-info="commercial_payment_state == 'partial'" decoration-warning="commercial_payment_state == 'unpaid'"/>
+                    
+                    <!-- Campos de Auditoría para diagnosticar fallas en el registro -->
+                    <field name="last_payment_memo" readonly="1" invisible="not last_payment_memo"/>
+                    <field name="last_payment_journal" readonly="1" invisible="not last_payment_journal"/>
                 </xpath>
             </field>
         </record>
