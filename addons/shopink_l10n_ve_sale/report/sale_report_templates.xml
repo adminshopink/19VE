@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. Acción del Reporte en el Menú "Imprimir" -->
+    <record id="action_report_saleorder_shopink" model="ir.actions.report">
+        <field name="name">Cotización Shopink (VE)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">shopink_l10n_ve_sale.report_saleorder_document_copy_2</field>
+        <field name="report_file">shopink_l10n_ve_sale.report_saleorder_document_copy_2</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- 2. La Plantilla del Documento -->
+    <template id="report_saleorder_document_copy_2">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+            <t t-set="forced_vat" t-value="doc.fiscal_position_id.foreign_vat"/>
+            
+            <t t-set="address">
+                <div class="mb-0">
+                    <strong t-field="doc.partner_id.commercial_partner_id.name"/><br/>
+                    <t t-if="doc.partner_id != doc.partner_id.commercial_partner_id">
+                        <span t-field="doc.partner_id.name"/>
+                    </t>
+                </div>
+                
+                <div class="mb-0">
+                    Teléfono: <span t-field="doc.partner_id.phone"/>
+                </div>
+                
+                <div class="mb-0">
+                    <span t-field="doc.partner_id.street"/><br/>
+                    <span t-field="doc.partner_id.street2"/>
+                </div>
+                
+                <!-- Resolución del RIF del Cliente usando tus campos limpios -->
+                <p t-if="doc.partner_id.l10n_ve_rif" class="mb-0">
+                    RIF: <span t-field="doc.partner_id.l10n_ve_rif"/>
+                </p>
+            </t>
+
+            <div class="page">
+                <div class="oe_structure"/>
+
+                <t t-set="is_proforma" t-value="env.context.get('proforma', False) or is_pro_forma"/>
+                <t t-set="layout_document_title">
+                    <span t-if="is_proforma">Pro-Forma Invoice # </span>
+                    <span t-elif="doc.state in ['draft','sent']">Quotation # </span>
+                    <span t-else="">Order # </span>
+                    <span t-field="doc.name">SO0000</span>
+                </t>
+
+                <!-- Bloque de Información -->
+                <div class="row mt-n4 mb-1 p-3" id="informations" style="background-color: #f2f2f2; border: 1px solid #dee2e6; border-radius: 15px;">
+                    <div t-if="doc.client_order_ref" class="col" name="informations_reference">
+                        <strong>Your Reference</strong>
+                        <div t-field="doc.client_order_ref">SO0000</div>
+                    </div>
+                    <div t-if="doc.date_order" class="col" name="informations_date">
+                        <strong t-if="is_proforma">Issued Date</strong>
+                        <strong t-elif="doc.state in ['draft', 'sent']">Quotation Date</strong>
+                        <strong t-else="">Order Date</strong>
+                        <div t-field="doc.date_order" t-options='{"widget": "date"}'>2023-12-31</div>
+                    </div>
+                    <div t-if="doc.validity_date and doc.state in ['draft', 'sent']" class="col" name="expiration_date">
+                        <strong>Expiration</strong>
+                        <div t-field="doc.validity_date">2023-12-31</div>
+                    </div>
+                    <div class="col" t-if="doc.incoterm">
+                        <strong>Incoterm</strong>
+                        <div t-if="doc.incoterm_location">
+                            <span t-field="doc.incoterm.code"/> <br/>
+                            <span t-field="doc.incoterm_location"/>
+                        </div>
+                        <div t-else="" t-field="doc.incoterm.code"/>
+                    </div>
+                    <div t-if="doc.user_id.name" class="col">
+                        <strong>Salesperson</strong>
+                        <div t-field="doc.user_id">Mitchell Admin</div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Productos -->
+                <t t-set="lines_to_report" t-value="doc._get_order_lines_to_report()"/>
+                <t t-set="display_discount" t-value="any(l.discount &gt; 0 for l in lines_to_report)"/>
+                <t t-set="display_taxes" t-value="any(l._has_taxes() for l in lines_to_report)"/>
+
+                <table class="o_has_total_table table o_main_table mt-3" style="border: 1px solid #dee2e6; border-radius: 15px; border-collapse: separate; overflow: hidden;">
+                    <thead style="background-color: #008cba; color: white !important; font-weight: bold; font-size: 1.1rem;">
+                        <tr>
+                            <th name="th_description" class="text-start" style="color: white !important;">Description</th>
+                            <th name="th_quantity" class="text-end" style="color: white !important;">Quantity</th>
+                            <th name="th_priceunit" class="text-end" style="color: white !important;">Unit Price</th>
+                            <th name="th_discount" t-if="display_discount" class="text-end" style="color: white !important;"><span>Disc.%</span></th>
+                            <th name="th_taxes" t-if="display_taxes" class="text-end" style="color: white !important;"><span>Taxes</span></th>
+                            <th name="th_subtotal" class="text-end" style="color: white !important;"><span>Amount</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="sale_tbody">
+                        <t t-foreach="lines_to_report" t-as="line">
+                            <tr t-if="line.display_type not in ['line_note', 'line_section']">
+                                <td><span t-field="line.name"/></td>
+                                <td class="text-end">
+                                    <span t-field="line.product_uom_qty"/>
+                                    <span t-field="line.product_uom_id"/>
+                                </td>
+                                <td class="text-end"><span t-field="line.price_unit"/></td>
+                                <td t-if="display_discount" class="text-end"><span t-field="line.discount"/></td>
+                                <td t-if="display_taxes" class="text-end">
+                                    <span t-out="', '.join(tax.tax_label or tax.name for tax in line.tax_ids)"/>
+                                </td>
+                                <td class="text-end"><span t-field="line.price_subtotal"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- Totales -->
+                <div class="clearfix" name="so_total_summary">
+                    <div id="total" class="row mt-n3" name="total">
+                        <div class="col-6 ms-auto">
+                            <table class="o_total_table table table-borderless">
+                                <t t-call="sale.document_tax_totals">
+                                    <t t-set="tax_totals" t-value="doc.tax_totals"/>
+                                    <t t-set="currency" t-value="doc.currency_id"/>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pie de página fiscal requerido -->
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <p class="fw-bold">SIN DERECHO A CRÉDITO FISCAL</p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
