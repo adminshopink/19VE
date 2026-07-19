@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Acción que abre el asistente -->
-    <record id="action_l10n_ve_fiscal_report_wizard" model="ir.actions.act_window">
+    <record id="view_l10n_ve_report_wizard" model="ir.ui.view">
+        <field name="name">l10n.ve.report.wizard.form</field>
+        <field name="model">l10n_ve.fiscal.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="report_type"/>
+                </group>
+                <footer>
+                    <button name="action_generate_xlsx" string="Generar Excel" type="object" class="btn-primary"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_ve_report_wizard" model="ir.actions.act_window">
         <field name="name">Libros Fiscales</field>
         <field name="res_model">l10n_ve.fiscal.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-
-    <!-- Menú para acceder al asistente -->
-    <menuitem id="menu_fiscal_report"
-              name="Libros Fiscales"
-              action="action_l10n_ve_fiscal_report_wizard"
-              parent="account.menu_finance_reports"
-              sequence="100"/>
 </odoo>
