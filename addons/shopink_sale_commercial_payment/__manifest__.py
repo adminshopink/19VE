@@ -5,7 +5,7 @@
     'category': 'Sales',
     'summary': 'Reportes y estados de pago comerciales en Órdenes de Venta independientes del flujo fiscal.',
     'author': 'Shopink',
-    'depends': ['sale', 'account', 'shopink_l10n_ve_invoice_control'],
+    'depends': ['sale', 'account'],
     'data': [
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',
