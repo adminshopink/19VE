@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Acción que abre el asistente -->
+    <record id="action_l10n_ve_fiscal_report_wizard" model="ir.actions.act_window">
+        <field name="name">Libros Fiscales</field>
+        <field name="res_model">l10n_ve.fiscal.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menú para acceder al asistente -->
+    <menuitem id="menu_fiscal_report"
+              name="Libros Fiscales"
+              action="action_l10n_ve_fiscal_report_wizard"
+              parent="account.menu_finance_reports"
+              sequence="100"/>
+</odoo>
