@@ -1,20 +1,11 @@
-# -*- coding: utf-8 -*-
-from odoo import models, api
-
-class AccountPayment(models.Model):
-    _inherit = 'account.payment'
-
-    def action_post(self):
-        # Ejecutamos el posteo original
+def action_post(self):
         res = super(AccountPayment, self).action_post()
-        
-        # Después de confirmar, forzamos la actualización de la orden
         for payment in self:
-            if payment.memo:
-                # Buscamos la orden que coincida con el memo
-                order = self.env['sale.order'].search([('name', 'ilike', payment.memo)], limit=1)
+            # BUSCAMOS POR EL CAMPO 'ref' (Referencia) que es donde Odoo pone el memo
+            search_term = payment.ref or payment.memo
+            if search_term:
+                order = self.env['sale.order'].search([('name', 'ilike', search_term)], limit=1)
                 if order:
-                    # Invalidamos y recalculamos
-                    order.invalidate_recordset(['commercial_payment_state'])
-                    order.recompute(['commercial_payment_state'])
+                    order.invalidate_recordset(['commercial_payment_state', 'last_payment_memo', 'last_payment_journal'])
+                    order.recompute(['commercial_payment_state', 'last_payment_memo', 'last_payment_journal'])
         return res
