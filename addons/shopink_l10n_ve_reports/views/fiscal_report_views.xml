@@ -24,4 +24,9 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
+    <menuitem id="menu_l10n_ve_fiscal_report"
+              name="Libros Fiscales VE"
+              parent="account.menu_finance_reports"
+              action="action_l10n_ve_report_wizard"
+              sequence="100"/>
 </odoo>
