@@ -15,29 +15,36 @@ class SaleOrder(models.Model):
         ('paid', 'Totalmente Pagado')
     ], string='Estado de Pago (Comercial)', compute='_compute_payment_info', store=True, default='unpaid')
 
+    # ESTA ES LA FUNCIÓN QUE TE FALTABA Y QUE EL XML ESTÁ BUSCANDO
+    def action_register_commercial_payment(self):
+        self.ensure_one()
+        return {
+            'name': _('Registrar Pago Comercial'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.payment',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_amount': self.amount_total,
+                'default_ref': self.name,  # Esto pone el S00001 automáticamente en el memo
+            },
+        }
+
     @api.depends('name', 'amount_total')
     def _compute_payment_info(self):
         for order in self:
-            # Depuración: Ver qué busca el sistema en los logs de Odoo.sh
-            _logger.info(f"Buscando pagos para la orden: {order.name}")
-            
+            # NOTA: Asegúrate de que el campo en account.payment se llame 'ref' o 'memo'
+            # Odoo estándar usa 'ref' (Referencia)
             payment = self.env['account.payment'].search([
-                ('memo', 'ilike', order.name),
+                ('ref', 'ilike', order.name),
                 ('state', '=', 'posted')
             ], limit=1, order='create_date desc')
             
             if payment:
-                _logger.info(f"¡Pago encontrado! ID: {payment.id}, Memo: {payment.memo}")
-                order.last_payment_memo = payment.memo
+                order.last_payment_memo = payment.ref
                 order.last_payment_journal = payment.journal_id.name
-                
-                # Definimos el estado basado en el pago encontrado
-                if order.amount_total > 0 and payment.amount >= order.amount_total:
-                    order.commercial_payment_state = 'paid'
-                else:
-                    order.commercial_payment_state = 'partial'
+                order.commercial_payment_state = 'paid' if payment.amount >= order.amount_total else 'partial'
             else:
-                _logger.info("No se encontraron pagos vinculados.")
                 order.last_payment_memo = False
                 order.last_payment_journal = False
                 order.commercial_payment_state = 'unpaid'
