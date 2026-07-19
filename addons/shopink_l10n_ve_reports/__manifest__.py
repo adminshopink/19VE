@@ -5,9 +5,15 @@
     'summary': 'Generación de Libros de Compras/Ventas en formato compatible con Excel.',
     'category': 'Accounting/Localizations',
     'author': 'Shopink',
-    'depends': ['account', 'web_studio', 'shopink_l10n_ve_partner', 'shopink_l10n_ve_withholding'],
+    'depends': [
+        'account', 
+        'web_studio', 
+        'shopink_l10n_ve_partner', 
+        'shopink_l10n_ve_withholding'
+    ],
     'data': [
         'security/ir.model.access.csv',
+        'views/fiscal_report_views.xml',
     ],
     'installable': True,
     'application': False,
