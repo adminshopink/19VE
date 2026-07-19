@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_l10n_ve_fiscal_report_wizard,access.l10n.ve.fiscal.report.wizard,model_l10n_ve_fiscal_report_wizard,base.group_user,1,1,1,1
+access_l10n_ve_fiscal_report_wizard,l10n.ve.fiscal.report.wizard,model_l10n_ve_fiscal_report_wizard,group_l10n_ve_fiscal_report,1,1,1,1
