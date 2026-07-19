@@ -3,6 +3,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import base64
 import io
+import xlsxwriter
 
 class L10nVeFiscalReportWizard(models.TransientModel):
     _name = 'l10n_ve.fiscal.report.wizard'
@@ -22,25 +23,47 @@ class L10nVeFiscalReportWizard(models.TransientModel):
             
         moves = self.env['account.move'].search(domain)
         if not moves:
-            raise UserError(_("No hay facturas encontradas."))
+            raise UserError(_("No hay facturas encontradas en este rango de fechas."))
 
-        # 2. Generar datos (CSV tabulado)
-        output = io.StringIO()
-        headers = ['Fecha', 'N° Factura', 'Nombre', 'RIF', 'Total', 'IVA Ret', 'ISLR Ret']
-        output.write('\t'.join(headers) + '\n')
+        # 2. Preparar el Excel
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        sheet = workbook.add_worksheet('Libro Fiscal')
         
+        # Formatos
+        header_format = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#D3D3D3'})
+        
+        # Encabezados (ajustados a tu necesidad básica; puedes ampliar esta lista)
+        headers = ['Fecha', 'N° Factura', 'Nombre Cliente/Proveedor', 'RIF', 'Total Ventas', 'IVA Retenido', 'ISLR Retenido']
+        for col, head in enumerate(headers):
+            sheet.write(0, col, head, header_format)
+        
+        # 3. Llenar filas
+        row = 1
         for m in moves:
-            row = [
-                str(m.date), m.name or '', m.partner_id.name or '', m.partner_id.vat or '',
-                str(m.amount_total), str(m.l10n_ve_iva_amount_retained), str(m.l10n_ve_islr_amount_retained)
-            ]
-            output.write('\t'.join(row) + '\n')
+            sheet.write(row, 0, str(m.date))
+            sheet.write(row, 1, m.name or '')
+            sheet.write(row, 2, m.partner_id.name or '')
+            sheet.write(row, 3, m.partner_id.vat or '')
+            sheet.write(row, 4, m.amount_total)
+            # Aseguramos campos de retención (ajusta según los nombres reales en tu Odoo 19)
+            sheet.write(row, 5, getattr(m, 'l10n_ve_iva_amount_retained', 0.0))
+            sheet.write(row, 6, getattr(m, 'l10n_ve_islr_amount_retained', 0.0))
+            row += 1
 
-        # 3. Crear adjunto y retornar URL
-        data = base64.b64encode(output.getvalue().encode('utf-16'))
+        workbook.close()
+        output.seek(0)
+        
+        # 4. Crear archivo y retornar
+        data = base64.b64encode(output.getvalue())
         attachment = self.env['ir.attachment'].create({
-            'name': 'reporte.xls',
+            'name': 'Libro_Fiscal.xlsx',
             'datas': data,
-            'mimetype': 'application/vnd.ms-excel',
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
-        return {'type': 'ir.actions.act_url', 'url': f'/web/content/{attachment.id}?download=true', 'target': 'new'}
+        
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'new',
+        }
