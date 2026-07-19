@@ -12,8 +12,9 @@
         'shopink_l10n_ve_withholding'
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'views/fiscal_report_views.xml',
+        'security/security.xml',
+    'security/ir.model.access.csv',
+    'views/fiscal_report_views.xml',
     ],
     'installable': True,
     'application': False,
