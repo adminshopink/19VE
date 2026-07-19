@@ -2,6 +2,5 @@
 <odoo>
     <record id="group_l10n_ve_fiscal_report" model="res.groups">
         <field name="name">Acceso a Libros Fiscales VE</field>
-        <field name="category_id" ref="base.module_category_accounting_reports"/>
     </record>
 </odoo>
