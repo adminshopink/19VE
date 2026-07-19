@@ -11,7 +11,7 @@ class AccountPayment(models.Model):
             order = self.env['sale.order'].search([('name', 'ilike', payment.ref or payment.name)], limit=1)
             if order:
                 order.write({
-                    'last_payment_memo': payment.ref or payment.name,
+                    'last_payment_memo': payment.memo or payment.name,
                     'last_payment_journal': payment.journal_id.name,
                     'commercial_payment_state': 'paid' if payment.amount >= order.amount_total else 'partial'
                 })
