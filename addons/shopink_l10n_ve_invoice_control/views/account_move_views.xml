@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_move_form_inherit_l10n_ve_control" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.l10n.ve.control</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <!-- Colocamos el Número de Control en la cabecera derecha, justo debajo de la fecha de la factura -->
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="l10n_ve_control_number" 
+                           readonly="state != 'draft'" 
+                           placeholder="Se generará al publicar..." 
+                           invisible="move_type not in ('out_invoice', 'out_refund')"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

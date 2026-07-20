@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_factura_digital_manager" model="res.groups">
+        <field name="name">Confirmador de Facturas Digitales</field>
+    </record>
+</odoo>

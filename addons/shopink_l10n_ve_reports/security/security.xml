@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_l10n_ve_fiscal_report" model="res.groups">
+        <field name="name">Acceso a Libros Fiscales VE</field>
+    </record>
+</odoo>
