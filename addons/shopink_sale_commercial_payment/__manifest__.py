@@ -3,7 +3,7 @@
     'name': 'Shopink - Control de Pago Comercial en Ventas',
     'version': '19.0.1.0.0',
     'category': 'Sales',
-    'summary': 'Reportes y estados de pago comerciales en Órdenes de Venta independientes del flujo fiscal.',
+    'summary': 'Reportes y estados de pago comerciales en Órdenes de Venta.',
     'author': 'Shopink',
     'depends': ['sale', 'account'],
     'data': [
