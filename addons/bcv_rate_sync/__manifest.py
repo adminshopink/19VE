@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'Sincronización Tasa BCV Shopink',
     'version': '19.0.1.0.0',
