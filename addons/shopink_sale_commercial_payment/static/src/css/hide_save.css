@@ -1,0 +1,4 @@
+/* Ocultar el botón Guardar nativo solo en ventanas modales (Wizards) */
+.modal-footer .o_form_button_save {
+    display: none !important;
+}
